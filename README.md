@@ -8,7 +8,7 @@
 ![Arch](https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white)
 
 <p align="center">
-<img src="./resources/rootkits.png" alt="rootkit" />
+<img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Linux_mascot_tux.png" alt="rootkit" width="20%" height="20%" />
 </p>
 <h2 style="text-align:center;">This is an academic rootkit, as a final degree project.</h2>
 
