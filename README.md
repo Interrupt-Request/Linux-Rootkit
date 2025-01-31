@@ -1,4 +1,5 @@
 # Academic linux rootkit with a Command & Control
+
 ![License](https://img.shields.io/badge/License-GPL%20V3-purple?labelColor=cian&style=for-the-badge)
 ![Version](https://img.shields.io/badge/Version-1.0-purple?labelColor=cyan&style=for-the-badge)
 ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
@@ -14,99 +15,104 @@
 
 ## 🔍​ Features
 
-- Keylogger.
-- Binary loader in memory with super user permissions that can run a payload were sent from Command & Control.
-- Sniffing and capturing network packets and sending to Command & Control.
-- Capture of TLS encryption keys from the browser and send to Command & Control.
-- Hijacking system calls to hide rootkit.
-- Privilege escalation using a device in /dev
-- Proof of concept of how to sniff information from the process memory.
+-   Keylogger.
+-   An in memory binary loader with super user permissions that can run a payload sent from Command & Control.
+-   Sniffing, capturing network packets and sending them to Command & Control.
+-   Capture TLS encryption keys from the browser and send them to Command & Control.
+-   Hijacking system calls to hide the rootkit.
+-   Privilege escalation using a device in /dev
+-   Proof of concept of how to sniff information from the process memory.
 
-    * This proof of concept consists of stealing a private key from an ethereum wallet (InifityWallet)
- 
+    -   This proof of concept consists on stealing a private key from an ethereum wallet (InifityWallet)
 
 ## 📝 Requirements
+
 The following packages are required to compile:
- - makefile
- - build-essential
- - kernel headers
- - dotnet-sdk
+
+-   makefile
+-   build-essential
+-   kernel headers
+-   dotnet-sdk
 
 ## ⚙️ Configuring
-- To compile the project it is necessary to specify the full path of the `reflectiveLoader` file in `binaryBlob.S` as shown in the block below.
- ~~~
-.incbin "/xxxx/xxxx/xxxx/Rootkit/build/reflectiveLoader"
-~~~
 
-- To configure which functions will be available, edit the variables in the `/src/main.c` file.
- ~~~
+-   To compile the project it is necessary to specify the full path of the `reflectiveLoader` file in `binaryBlob.S` as shown in the block below.
+
+```
+.incbin "/xxxx/xxxx/xxxx/Rootkit/build/reflectiveLoader"
+```
+
+-   To configure which functions will be available, edit the variables in the `/src/main.c` file.
+
+```
 #define verbose 0
 
 #define keylogger 1 /*Requiere sendNetworkPackets*/ /*Requiere socket*/
-#define binatyLoader 1 
+#define binatyLoader 1
 #define SSLKeys 1 /*Requiere charRoot*/ /*Requiere socket*/
 #define charRoot 1 /* Char device*/
-#define sendNetworkPackets 1 
+#define sendNetworkPackets 1
 #define networkCC 1 /* Network socket*/
 #define hideDentry 1 /* Hiding you in the file system */
 #define hideModuleList 1 /* Hides you from the list of kernel modules (but can't be unloaded) */
 #define pocInifinityWallet 1
- ~~~
+```
 
-- To use qemu in a simple way you also have to configure the config.sh file  and then load it with `source ./config.sh`
+-   To use qemu in a simple way you will also have to configure the config.sh file and then load it with `source ./config.sh`
 
-
- ~~~
+```
 hardDisk="path to linux qemu disk"
-~~~
-
+```
 
 ## 🚀 Building
 
-- Run make all will compile and copy all binaries files in /build folder.
-these files are:
-    * ***CheckRoot*** -> This program check that is running in root mode. 
-    * ***Command_and_Control*** -> Command & Control binary.
-    * ***reflectiveLoader*** -> this program loads a payload that was sended from the command and control.
-    * ***reverseShell*** -> This program open a reverse shell that can be listened from netcat program.
-    ***roortkit.ko*** -> The roorkit kernel module file.
-- Run make also will copy few files to /qemu/ isshared (this folder shared between the virtual machine and host)
-    * ***load.sh*** -> This script simulates a roorkit loading.
-    * ***rootkit.ko*** -> The roorkit kernel module file.
-- Run clean will delete all compiled files.
-- You can also compile the different parts, such as the tools or Command & Control, for that see the file makefile
+-   Running make all will compile and copy al the binary files in the /build folder.
+    these files are:
+    * **_CheckRoot_** -> This program checks that it is running in root mode.
+    * **_Command_and_Control_** -> Command & Control binary.
+    * **_reflectiveLoader_** -> this program loads a payload that was sent from the command and control.
+    * **_reverseShell_** -> This program opens a reverse shell that can be listened from netcat program.
+    * **_roortkit.ko_** -> The roorkit kernel module file.
+-   Running make also will copy some files to /qemu/isshared (this folder is shared between the virtual machine and host)
+    -   **_load.sh_** -> This script simulates a rootkit loading.
+    -   **_rootkit.ko_** -> The roorkit kernel module file.
+-   Running make clean will delete all compiled files.
+-   You can also compile the different components, such as the tools or Command & Control. For that see the makefile
 
 ## 💻​ How to use
 
-- First run the Command & Control .
+-   First run the Command & Control .
 
-- A script is included that simulate the rootkit kernel module load, the first load implant the persistence in the system, and patch the systemd variables for the all childs process export the ssl keys.
+-   A script is included to simulate the rootkit kernel module load, the first load implants the persistence in the system and the patches for the systemd variables so all the child processes export the ssl keys.
 
-- Next, the session must then be closed, to simulate a kernel module load with persistence. This also activates all other functions.
+-   Next, the session must be closed, to simulate a kernel module load with persistence. This also activates all the other functions.
 
-The script guides in this process.
+The script is guided in this process.
 
 The `config.sh` file allows to launch a qemu virtual machine in a simpler way (with the configuration in a single command).
 
-The command & Control generates some files where it stores the data received from the roorkit. ***there are example files***
- * ***keyLogger.txt***
- * ***log.txt***
- * ***networkData.txt***
- * ***SSLKEYLOGFILE.txt***
- * ***ethereumPrivateKey.txt***
+The Command & Control generates files to store the data received from the rootkit. **_there are example files_**
+
+-   **_keyLogger.txt_**
+-   **_log.txt_**
+-   **_networkData.txt_**
+-   **_SSLKEYLOGFILE.txt_**
+-   **_ethereumPrivateKey.txt_**
 
 To convert the data packets to .pcap files use the command
- ~~~
- cat xx.x.xxxx_networkData.txt | text2pcap - dump.pcap
-~~~
+
+```
+cat xx.x.xxxx_networkData.txt | text2pcap - dump.pcap
+```
 
 To create a server for the reverse shell use the following command.
-~~~
-nc -lvnp 9001 
-~~~
 
+```
+nc -lvnp 9001
+```
 
 ## 📷​​ Screen Shots
+
 </p>
 <p style="text-align:center;">Command & Control main window</p>
 <p align="center">
@@ -137,10 +143,6 @@ nc -lvnp 9001
 <p align="center">
 <img src="./resources/reverseshell.png" alt="rootkit" />
 
-
 ## License
 
 [GPLv3](https://opensource.org/licenses/)
-
-
-
